@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruliad Lambda - Proof Dependencies</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #10002B;
+            font-family: 'Courier New', monospace;
+            color: #E0AAFF;
+            overflow-x: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(180deg, #1a0033 0%, #10002B 100%);
+            border-bottom: 2px solid #7B2CBF;
+        }
+        h1 { color: #E0AAFF; letter-spacing: 3px; margin-bottom: 10px; }
+        .subtitle { color: #9D4EDD; font-size: 14px; }
+        .container { display: flex; height: calc(100vh - 120px); }
+        .view-2d {
+            width: 50%;
+            border-right: 2px solid #7B2CBF;
+            overflow: auto;
+            padding: 20px;
+        }
+        .view-3d { width: 50%; position: relative; }
+        #canvas3d { width: 100%; height: 100%; }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(16, 0, 43, 0.9);
+            padding: 15px;
+            border: 1px solid #7B2CBF;
+            border-radius: 8px;
+        }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .module-section {
+            margin-bottom: 30px;
+            border: 1px solid #3c096c;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .module-header {
+            background: #3c096c;
+            padding: 10px 15px;
+            font-weight: bold;
+            color: #E0AAFF;
+        }
+        .theorem-list { padding: 10px; }
+        .theorem {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(157, 78, 221, 0.1);
+            border-left: 3px solid #9D4EDD;
+            border-radius: 0 4px 4px 0;
+            font-size: 12px;
+        }
+        .theorem:hover { background: rgba(157, 78, 221, 0.3); }
+        .theorem-name { color: #E0AAFF; font-weight: bold; }
+        .theorem-deps { color: #7B2CBF; font-size: 11px; margin-top: 4px; }
+        .theorem-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        .type-theorem { background: #FF6B6B; color: #10002B; }
+        .type-lemma { background: #9D4EDD; color: #10002B; }
+        .type-def { background: #4ECDC4; color: #10002B; }
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 0, 43, 0.9);
+            padding: 10px;
+            border: 1px solid #7B2CBF;
+            border-radius: 8px;
+        }
+        button {
+            background: #7B2CBF;
+            color: #E0AAFF;
+            border: none;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover { background: #9D4EDD; }
+        .arrow { color: #7B2CBF; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PROOF DEPENDENCY GRAPH</h1>
+        <div class="subtitle">Church-Rosser Theorem and Supporting Lemmas</div>
+    </div>
+
+    <div class="container">
+        <div class="view-2d">
+            <div class="module-section">
+                <div class="module-header">Confluence.lean — Church-Rosser</div>
+                <div class="theorem-list">
+                    <div class="theorem">
+                        <span class="theorem-name">Steps.churchRosser</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Steps.toReflTransGenPar, church_rosser_reflTransGen, ReflTransGenPar.toSteps</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">church_rosser_reflTransGen</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.diamond</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.diamond</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.develop_cofinal, develop</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.develop_cofinal</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.substTop, Par.develops, develop</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.substTop</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.subst, Par.shift</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.develops</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.refl, develop</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">develop</span>
+                        <span class="theorem-type type-def">def</span>
+                        <div class="theorem-deps">← substTop (from ShiftSubst)</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.subst</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.shift, ShiftSubst lemmas</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.shift</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Par.refl</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">Par.refl</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← (base case)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-section">
+                <div class="module-header">ShiftSubst.lean — Substitution Calculus</div>
+                <div class="theorem-list">
+                    <div class="theorem">
+                        <span class="theorem-name">shift_shifted</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← (structural induction)</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">shiftDown_shift_id</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← shift_shifted</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">shift_shift_swap</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← (structural induction)</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">subst_shifted</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← shift_shifted</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-section">
+                <div class="module-header">Beta.lean — Reduction & Multiway</div>
+                <div class="theorem-list">
+                    <div class="theorem">
+                        <span class="theorem-name">stepEdgesList</span>
+                        <span class="theorem-type type-def">def</span>
+                        <div class="theorem-deps">← rootStep?, Step</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">stepEdgesList_sound</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← rootStep?_sound, Step</div>
+                    </div>
+                    <div class="theorem">
+                        <span class="theorem-name">stepEdgesList_complete</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Step cases</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-section">
+                <div class="module-header">SKYBridge.lean — λ ↔ SK Bridge</div>
+                <div class="theorem-list">
+                    <div class="theorem">
+                        <span class="theorem-name">ofComb_simulates_step_joinable</span>
+                        <span class="theorem-type type-theorem">theorem</span>
+                        <div class="theorem-deps">← Steps.churchRosser, KEnc/SEnc β-reduction lemmas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-3d">
+            <div id="canvas3d"></div>
+            <div class="controls">
+                <button onclick="resetCamera()">Reset View</button>
+                <button onclick="toggleRotation()">Auto-Rotate</button>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF6B6B;"></div>
+                    <span>Core Theorem</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9D4EDD;"></div>
+                    <span>Supporting Lemma</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4ECDC4;"></div>
+                    <span>Definition</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7B2CBF;"></div>
+                    <span>Dependency Edge</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Proof dependency data
+        const nodes = [
+            // Level 0 - Top (Church-Rosser)
+            { id: 'churchRosser', name: 'Steps.churchRosser', type: 'theorem', x: 0, y: 4, z: 0 },
+
+            // Level 1
+            { id: 'toReflTransGen', name: 'toReflTransGenPar', type: 'lemma', x: -2, y: 3, z: 0 },
+            { id: 'crReflTransGen', name: 'church_rosser_reflTransGen', type: 'theorem', x: 0, y: 3, z: 0 },
+            { id: 'rtgToSteps', name: 'ReflTransGenPar.toSteps', type: 'lemma', x: 2, y: 3, z: 0 },
+
+            // Level 2
+            { id: 'diamond', name: 'Par.diamond', type: 'theorem', x: 0, y: 2, z: 0 },
+            { id: 'parToSteps', name: 'Par.toSteps', type: 'lemma', x: 2, y: 2, z: 1 },
+            { id: 'stepToPar', name: 'Step.toPar', type: 'lemma', x: -2, y: 2, z: 1 },
+
+            // Level 3
+            { id: 'developCofinal', name: 'develop_cofinal', type: 'theorem', x: 0, y: 1, z: 0 },
+            { id: 'develop', name: 'develop', type: 'def', x: 2, y: 1, z: 0 },
+
+            // Level 4
+            { id: 'substTop', name: 'Par.substTop', type: 'theorem', x: -1, y: 0, z: 0 },
+            { id: 'develops', name: 'Par.develops', type: 'theorem', x: 1, y: 0, z: 0 },
+
+            // Level 5
+            { id: 'parSubst', name: 'Par.subst', type: 'theorem', x: -2, y: -1, z: 0 },
+            { id: 'parShift', name: 'Par.shift', type: 'theorem', x: 0, y: -1, z: 0 },
+            { id: 'parRefl', name: 'Par.refl', type: 'theorem', x: 2, y: -1, z: 0 },
+
+            // ShiftSubst level
+            { id: 'shiftSubst', name: 'ShiftSubst lemmas', type: 'def', x: -2, y: -2, z: 1 },
+
+            // Beta module
+            { id: 'stepEdges', name: 'stepEdgesList', type: 'def', x: 3, y: 0, z: 2 },
+
+            // Bridge
+            { id: 'bridge', name: 'ofComb_simulates', type: 'theorem', x: 0, y: 5, z: 1 },
+        ];
+
+        const edges = [
+            ['churchRosser', 'toReflTransGen'],
+            ['churchRosser', 'crReflTransGen'],
+            ['churchRosser', 'rtgToSteps'],
+            ['crReflTransGen', 'diamond'],
+            ['rtgToSteps', 'parToSteps'],
+            ['toReflTransGen', 'stepToPar'],
+            ['diamond', 'developCofinal'],
+            ['diamond', 'develop'],
+            ['developCofinal', 'substTop'],
+            ['developCofinal', 'develops'],
+            ['developCofinal', 'develop'],
+            ['substTop', 'parSubst'],
+            ['substTop', 'parShift'],
+            ['develops', 'parRefl'],
+            ['develops', 'develop'],
+            ['parSubst', 'parShift'],
+            ['parSubst', 'shiftSubst'],
+            ['parShift', 'parRefl'],
+            ['bridge', 'churchRosser'],
+        ];
+
+        // Three.js setup
+        const container = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x10002B);
+
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(8, 5, 10);
+        camera.lookAt(0, 1, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Colors
+        const colors = {
+            theorem: 0xFF6B6B,
+            lemma: 0x9D4EDD,
+            def: 0x4ECDC4
+        };
+
+        // Create nodes
+        const nodeObjects = {};
+        nodes.forEach(node => {
+            const geometry = new THREE.SphereGeometry(0.25, 32, 32);
+            const material = new THREE.MeshBasicMaterial({
+                color: colors[node.type],
+                transparent: true,
+                opacity: 0.9
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(node.x, node.y, node.z);
+            scene.add(sphere);
+            nodeObjects[node.id] = sphere;
+
+            // Glow
+            const glowGeometry = new THREE.SphereGeometry(0.35, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: colors[node.type],
+                transparent: true,
+                opacity: 0.2
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            sphere.add(glow);
+        });
+
+        // Create edges
+        edges.forEach(([from, to]) => {
+            const fromNode = nodes.find(n => n.id === from);
+            const toNode = nodes.find(n => n.id === to);
+            if (fromNode && toNode) {
+                const points = [
+                    new THREE.Vector3(fromNode.x, fromNode.y, fromNode.z),
+                    new THREE.Vector3(toNode.x, toNode.y, toNode.z)
+                ];
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x7B2CBF,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const line = new THREE.Line(geometry, material);
+                scene.add(line);
+            }
+        });
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xE0AAFF, 0.5);
+        scene.add(ambientLight);
+
+        // Controls
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let autoRotate = true;
+
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            autoRotate = false;
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                camera.position.x = camera.position.x * Math.cos(deltaX * 0.01) - camera.position.z * Math.sin(deltaX * 0.01);
+                camera.position.z = camera.position.z * Math.cos(deltaX * 0.01) + camera.position.x * Math.sin(deltaX * 0.01);
+                camera.position.y += deltaY * 0.05;
+                camera.lookAt(0, 1, 0);
+            }
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        container.addEventListener('mouseup', () => isDragging = false);
+        container.addEventListener('mouseleave', () => isDragging = false);
+
+        container.addEventListener('wheel', (e) => {
+            const factor = e.deltaY > 0 ? 1.1 : 0.9;
+            camera.position.multiplyScalar(factor);
+        });
+
+        function resetCamera() {
+            camera.position.set(8, 5, 10);
+            camera.lookAt(0, 1, 0);
+        }
+
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (autoRotate) {
+                const radius = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2);
+                const angle = Math.atan2(camera.position.z, camera.position.x) + 0.003;
+                camera.position.x = radius * Math.cos(angle);
+                camera.position.z = radius * Math.sin(angle);
+                camera.lookAt(0, 1, 0);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+</body>
+</html>

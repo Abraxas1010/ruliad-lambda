@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10002B;stop-opacity:1"/>
+      <stop offset="20%" style="stop-color:#3c096c;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#9D4EDD;stop-opacity:1"/>
+      <stop offset="80%" style="stop-color:#3c096c;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#10002B;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#10002B"/>
+
+  <!-- Decorative pattern -->
+  <g filter="url(#glow)">
+    <!-- Wave pattern suggesting λ -->
+    <path d="M0,40 Q50,20 100,40 T200,40 T300,40 T400,40 T500,40"
+          stroke="#7B2CBF" stroke-width="2" fill="none" opacity="0.5"/>
+    <path d="M0,50 Q50,30 100,50 T200,50 T300,50 T400,50 T500,50"
+          stroke="#9D4EDD" stroke-width="1.5" fill="none" opacity="0.4"/>
+    <path d="M0,60 Q50,40 100,60 T200,60 T300,60 T400,60 T500,60"
+          stroke="#C77DFF" stroke-width="1" fill="none" opacity="0.3"/>
+
+    <!-- Center λ symbol -->
+    <text x="250" y="50" fill="#E0AAFF" font-family="Times New Roman" font-size="28"
+          text-anchor="middle" font-style="italic" opacity="0.7">λ</text>
+
+    <!-- Dots representing terms in the Ruliad -->
+    <circle cx="80" cy="40" r="3" fill="#9D4EDD" opacity="0.6"/>
+    <circle cx="150" cy="35" r="2" fill="#C77DFF" opacity="0.5"/>
+    <circle cx="200" cy="45" r="2.5" fill="#9D4EDD" opacity="0.6"/>
+    <circle cx="300" cy="38" r="2" fill="#C77DFF" opacity="0.5"/>
+    <circle cx="350" cy="48" r="2.5" fill="#9D4EDD" opacity="0.6"/>
+    <circle cx="420" cy="42" r="3" fill="#9D4EDD" opacity="0.6"/>
+  </g>
+
+  <!-- Gradient line -->
+  <rect x="50" y="65" width="400" height="2" fill="url(#fadeGrad)" rx="1"/>
+</svg>

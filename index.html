@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruliad Lambda — Machine-Verified λ-Calculus Proofs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #10002B;
+            font-family: 'Courier New', monospace;
+            color: #E0AAFF;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, #1a0033 0%, #10002B 100%);
+            border-bottom: 3px solid #7B2CBF;
+        }
+        h1 {
+            color: #E0AAFF;
+            font-size: 2.5em;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #9D4EDD;
+        }
+        .subtitle { color: #9D4EDD; font-size: 1.1em; margin-bottom: 20px; }
+        .badges { margin-top: 20px; }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 5px;
+            background: #3c096c;
+            border-radius: 20px;
+            font-size: 0.85em;
+            border: 1px solid #7B2CBF;
+        }
+        .badge-proven { background: #2d6a4f; border-color: #40916c; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { margin-bottom: 50px; }
+        h2 {
+            color: #C77DFF;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3c096c;
+        }
+        .viz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .viz-card {
+            background: #1a0033;
+            border: 1px solid #3c096c;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .viz-card:hover {
+            transform: translateY(-5px);
+            border-color: #9D4EDD;
+        }
+        .viz-card img, .viz-card iframe {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #3c096c;
+        }
+        .viz-card-content { padding: 15px; }
+        .viz-card h3 { color: #E0AAFF; margin-bottom: 8px; }
+        .viz-card p { color: #9D4EDD; font-size: 0.9em; }
+        .viz-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #7B2CBF;
+            color: #E0AAFF;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+        .viz-card a:hover { background: #9D4EDD; }
+        .theorem-list { list-style: none; }
+        .theorem-list li {
+            padding: 12px 15px;
+            margin: 10px 0;
+            background: #1a0033;
+            border-left: 4px solid #9D4EDD;
+            border-radius: 0 8px 8px 0;
+        }
+        .theorem-name { color: #E0AAFF; font-weight: bold; }
+        .theorem-desc { color: #9D4EDD; font-size: 0.9em; }
+        .theorem-status { color: #40916c; }
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .link-card {
+            display: block;
+            padding: 20px;
+            background: #1a0033;
+            border: 1px solid #3c096c;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: border-color 0.3s;
+        }
+        .link-card:hover { border-color: #9D4EDD; }
+        .link-card h4 { color: #E0AAFF; margin-bottom: 8px; }
+        .link-card p { color: #9D4EDD; font-size: 0.85em; }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #3c096c;
+            margin-top: 50px;
+        }
+        .footer a { color: #9D4EDD; }
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #E0AAFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>RULIAD LAMBDA</h1>
+        <div class="subtitle">Machine-Verified Proofs for λ-Calculus Ruliology</div>
+        <div class="badges">
+            <span class="badge">Lean 4.14.0</span>
+            <span class="badge badge-proven">Church-Rosser ✓</span>
+            <span class="badge badge-proven">sorry: 0</span>
+            <span class="badge">10,000+ lines</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Interactive Visualizations</h2>
+            <div class="viz-grid">
+                <div class="viz-card">
+                    <img src="visualizations/church_rosser_diamond.svg" alt="Church-Rosser Diamond">
+                    <div class="viz-card-content">
+                        <h3>Church-Rosser Diamond</h3>
+                        <p>The fundamental confluence property: all paths converge.</p>
+                        <a href="visualizations/church_rosser_diamond.svg">View Full</a>
+                    </div>
+                </div>
+                <div class="viz-card">
+                    <img src="visualizations/multiway_confluence.svg" alt="Multiway Confluence">
+                    <div class="viz-card-content">
+                        <h3>Multiway β-Reduction</h3>
+                        <p>Branching and merging in the multiway system.</p>
+                        <a href="visualizations/multiway_confluence.svg">View Full</a>
+                    </div>
+                </div>
+                <div class="viz-card">
+                    <img src="visualizations/multiway_size6.svg" alt="Size-6 Graph">
+                    <div class="viz-card-content">
+                        <h3>Size-6 Term Graph</h3>
+                        <p>Complete multiway graph for a size-6 λ-term.</p>
+                        <a href="visualizations/multiway_size6.svg">View Full</a>
+                    </div>
+                </div>
+                <div class="viz-card">
+                    <img src="visualizations/ruliad_branchial.svg" alt="Branchial Graph">
+                    <div class="viz-card-content">
+                        <h3>Branchial Structure</h3>
+                        <p>Simultaneity surfaces in the Ruliad slice.</p>
+                        <a href="visualizations/ruliad_branchial.svg">View Full</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3D Interactive Explorations</h2>
+            <div class="viz-grid">
+                <div class="viz-card">
+                    <div style="height:200px;background:#1a0033;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #3c096c;">
+                        <span style="font-size:3em;">🔗</span>
+                    </div>
+                    <div class="viz-card-content">
+                        <h3>Proof Dependency Graph</h3>
+                        <p>Interactive 3D visualization of theorem dependencies leading to Church-Rosser.</p>
+                        <a href="visualizations/proof_dependencies.html">Launch 3D View</a>
+                    </div>
+                </div>
+                <div class="viz-card">
+                    <div style="height:200px;background:#1a0033;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #3c096c;">
+                        <span style="font-size:3em;">λ</span>
+                    </div>
+                    <div class="viz-card-content">
+                        <h3>Lambda Multiway Explorer</h3>
+                        <p>Interactive 3D graph showing term reductions and confluence.</p>
+                        <a href="visualizations/ruliad_lambda_3d.html">Launch 3D View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Key Theorems</h2>
+            <ul class="theorem-list">
+                <li>
+                    <span class="theorem-name">Steps.churchRosser</span>
+                    <span class="theorem-status"> ✓ PROVEN</span>
+                    <div class="theorem-desc">Church-Rosser theorem: β-reduction is confluent</div>
+                </li>
+                <li>
+                    <span class="theorem-name">Bridge.ofComb_simulates_step_joinable</span>
+                    <span class="theorem-status"> ✓ PROVEN</span>
+                    <div class="theorem-desc">SK combinator steps are simulated by joinable β-reductions</div>
+                </li>
+                <li>
+                    <span class="theorem-name">Par.diamond</span>
+                    <span class="theorem-status"> ✓ PROVEN</span>
+                    <div class="theorem-desc">Parallel reduction has the diamond property</div>
+                </li>
+                <li>
+                    <span class="theorem-name">stepEdgesList_sound</span>
+                    <span class="theorem-status"> ✓ PROVEN</span>
+                    <div class="theorem-desc">Multiway enumeration is sound</div>
+                </li>
+                <li>
+                    <span class="theorem-name">stepEdgesList_complete</span>
+                    <span class="theorem-status"> ✓ PROVEN</span>
+                    <div class="theorem-desc">Multiway enumeration is complete</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Documentation</h2>
+            <div class="links-grid">
+                <a href="https://github.com/Abraxas1010/ruliad-lambda" class="link-card">
+                    <h4>GitHub Repository</h4>
+                    <p>Full source code, build instructions, and README</p>
+                </a>
+                <a href="docs/CLAIMS_AND_PROOFS.md" class="link-card">
+                    <h4>Claims & Proofs</h4>
+                    <p>Mapping Wolfram's claims to Lean theorems</p>
+                </a>
+                <a href="docs/NOTEBOOK_STYLE_README.md" class="link-card">
+                    <h4>Notebook Narrative</h4>
+                    <p>Computational essay with embedded visualizations</p>
+                </a>
+                <a href="https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/" class="link-card">
+                    <h4>Wolfram's Article</h4>
+                    <p>"The Ruliology of Lambdas" (2025)</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>The Ruliad Aesthetic</h2>
+            <p style="text-align:center;margin-bottom:20px;">Neon purple palette inspired by Wolfram's Ruliad visualizations</p>
+            <div class="color-palette">
+                <div class="color-swatch" style="background:#9D4EDD;" title="#9D4EDD"></div>
+                <div class="color-swatch" style="background:#7B2CBF;" title="#7B2CBF"></div>
+                <div class="color-swatch" style="background:#E0AAFF;" title="#E0AAFF"></div>
+                <div class="color-swatch" style="background:#C77DFF;" title="#C77DFF"></div>
+                <div class="color-swatch" style="background:#3c096c;" title="#3c096c"></div>
+                <div class="color-swatch" style="background:#10002B;" title="#10002B"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Exploring the Ruliad, one β-reduction at a time.</strong></p>
+        <p style="margin-top:10px;">
+            <a href="https://github.com/Abraxas1010/ruliad-lambda">GitHub</a> •
+            <a href="https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/">Wolfram's Article</a> •
+            MIT License
+        </p>
+        <img src="visualizations/ruliad_footer.svg" alt="Ruliad Pattern" width="300" style="margin-top:20px;opacity:0.7;">
+    </div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="700" height="500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7B2CBF;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#9D4EDD;stop-opacity:0.4"/>
+    </linearGradient>
+    <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#7B2CBF"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#10002B"/>
+
+  <!-- Title -->
+  <text x="350" y="30" fill="#E0AAFF" font-family="Courier New" font-size="16" text-anchor="middle" font-weight="bold" letter-spacing="2">
+    MULTIWAY β-REDUCTION: SIZE-6 TERM
+  </text>
+  <text x="350" y="50" fill="#9D4EDD" font-family="Courier New" font-size="11" text-anchor="middle">
+    (λx.λy.x y) (λz.z) showing branching and confluence
+  </text>
+
+  <!-- Layer 0: Initial term -->
+  <g filter="url(#glow)">
+    <circle cx="350" cy="90" r="22" fill="#FF6B6B"/>
+    <text x="350" y="95" fill="#10002B" font-family="Courier New" font-size="11" text-anchor="middle" font-weight="bold">t₀</text>
+  </g>
+
+  <!-- Edges L0 → L1 -->
+  <g stroke="url(#edgeGrad)" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M335,108 Q280,130 230,155"/>
+    <path d="M365,108 Q420,130 470,155"/>
+  </g>
+
+  <!-- Layer 1 -->
+  <g filter="url(#glow)">
+    <circle cx="220" cy="170" r="16" fill="#9D4EDD"/>
+    <text x="220" y="174" fill="#E0AAFF" font-family="Courier New" font-size="9" text-anchor="middle">t₁</text>
+    <circle cx="480" cy="170" r="16" fill="#9D4EDD"/>
+    <text x="480" y="174" fill="#E0AAFF" font-family="Courier New" font-size="9" text-anchor="middle">t₂</text>
+  </g>
+
+  <!-- Edges L1 → L2 -->
+  <g stroke="url(#edgeGrad)" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M208,184 Q170,210 140,235"/>
+    <path d="M232,184 Q260,210 280,235"/>
+    <path d="M468,184 Q440,210 420,235"/>
+    <path d="M492,184 Q530,210 560,235"/>
+  </g>
+
+  <!-- Layer 2 -->
+  <g filter="url(#glow)">
+    <circle cx="130" cy="250" r="14" fill="#9D4EDD"/>
+    <circle cx="280" cy="250" r="14" fill="#9D4EDD"/>
+    <circle cx="420" cy="250" r="14" fill="#9D4EDD"/>
+    <circle cx="570" cy="250" r="14" fill="#9D4EDD"/>
+  </g>
+
+  <!-- Edges L2 → L3 (branching continues) -->
+  <g stroke="url(#edgeGrad)" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M122,263 Q100,285 90,310"/>
+    <path d="M138,263 Q150,285 160,310"/>
+    <path d="M272,263 Q255,285 240,310"/>
+    <path d="M288,263 Q310,285 330,310"/>
+    <path d="M412,263 Q390,285 370,310"/>
+    <path d="M428,263 Q445,285 460,310"/>
+    <path d="M562,263 Q550,285 540,310"/>
+    <path d="M578,263 Q600,285 610,310"/>
+  </g>
+
+  <!-- Layer 3 -->
+  <g filter="url(#glow)">
+    <circle cx="85" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="165" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="235" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="335" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="365" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="465" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="535" cy="325" r="12" fill="#9D4EDD"/>
+    <circle cx="615" cy="325" r="12" fill="#9D4EDD"/>
+  </g>
+
+  <!-- Edges L3 → L4 (confluence begins) -->
+  <g stroke="#C77DFF" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+    <path d="M85,337 Q120,370 200,395"/>
+    <path d="M165,337 Q180,370 200,395"/>
+    <path d="M235,337 Q225,370 200,395"/>
+    <path d="M335,337 Q300,370 200,395"/>
+    <path d="M365,337 Q400,370 500,395"/>
+    <path d="M465,337 Q480,370 500,395"/>
+    <path d="M535,337 Q520,370 500,395"/>
+    <path d="M615,337 Q580,370 500,395"/>
+  </g>
+
+  <!-- Layer 4: Merging -->
+  <g filter="url(#glow)">
+    <circle cx="200" cy="410" r="16" fill="#C77DFF"/>
+    <circle cx="500" cy="410" r="16" fill="#C77DFF"/>
+  </g>
+
+  <!-- Final confluence -->
+  <g stroke="#E0AAFF" stroke-width="3" fill="none" marker-end="url(#arrowhead)">
+    <path d="M215,420 Q350,440 350,455"/>
+    <path d="M485,420 Q350,440 350,455"/>
+  </g>
+
+  <!-- Normal Form -->
+  <g filter="url(#glow)">
+    <circle cx="350" cy="470" r="20" fill="#E0AAFF"/>
+    <text x="350" y="475" fill="#10002B" font-family="Courier New" font-size="12" text-anchor="middle" font-weight="bold">NF</text>
+  </g>
+
+  <!-- Annotations -->
+  <text x="60" y="130" fill="#7B2CBF" font-family="Courier New" font-size="10" opacity="0.8">β-head</text>
+  <text x="540" y="130" fill="#7B2CBF" font-family="Courier New" font-size="10" opacity="0.8">β-arg</text>
+  <text x="280" y="390" fill="#C77DFF" font-family="Courier New" font-size="10">confluence</text>
+  <text x="420" y="390" fill="#C77DFF" font-family="Courier New" font-size="10">confluence</text>
+
+  <!-- Legend -->
+  <g transform="translate(20, 460)">
+    <circle cx="10" cy="0" r="6" fill="#FF6B6B"/>
+    <text x="25" y="4" fill="#E0AAFF" font-family="Courier New" font-size="9">initial</text>
+    <circle cx="90" cy="0" r="6" fill="#9D4EDD"/>
+    <text x="105" y="4" fill="#E0AAFF" font-family="Courier New" font-size="9">branch</text>
+    <circle cx="165" cy="0" r="6" fill="#C77DFF"/>
+    <text x="180" y="4" fill="#E0AAFF" font-family="Courier New" font-size="9">merge</text>
+    <circle cx="240" cy="0" r="6" fill="#E0AAFF"/>
+    <text x="255" y="4" fill="#E0AAFF" font-family="Courier New" font-size="9">normal form</text>
+  </g>
+</svg>

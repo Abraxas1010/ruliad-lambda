@@ -101,6 +101,41 @@
         }
         button:hover { background: #9D4EDD; }
         .arrow { color: #7B2CBF; }
+        #tooltip {
+            position: absolute;
+            background: rgba(16, 0, 43, 0.95);
+            border: 2px solid #9D4EDD;
+            border-radius: 8px;
+            padding: 12px 16px;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+        #tooltip .tooltip-name {
+            color: #E0AAFF;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        #tooltip .tooltip-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+        #tooltip .tooltip-type.theorem { background: #FF6B6B; color: #10002B; }
+        #tooltip .tooltip-type.lemma { background: #9D4EDD; color: #10002B; }
+        #tooltip .tooltip-type.def { background: #4ECDC4; color: #10002B; }
+        #tooltip .tooltip-deps {
+            color: #7B2CBF;
+            font-size: 11px;
+            border-top: 1px solid #3c096c;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -228,6 +263,11 @@
 
         <div class="view-3d">
             <div id="canvas3d"></div>
+            <div id="tooltip">
+                <div class="tooltip-name"></div>
+                <div class="tooltip-type"></div>
+                <div class="tooltip-deps"></div>
+            </div>
             <div class="controls">
                 <button onclick="resetCamera()">Reset View</button>
                 <button onclick="toggleRotation()">Auto-Rotate</button>
@@ -254,42 +294,60 @@
     </div>
 
     <script>
-        // Proof dependency data
+        // Proof dependency data with descriptions
         const nodes = [
             // Level 0 - Top (Church-Rosser)
-            { id: 'churchRosser', name: 'Steps.churchRosser', type: 'theorem', x: 0, y: 4, z: 0 },
+            { id: 'churchRosser', name: 'Steps.churchRosser', type: 'theorem', x: 0, y: 4, z: 0,
+              deps: 'toReflTransGenPar, church_rosser_reflTransGen, ReflTransGenPar.toSteps',
+              desc: 'The Church-Rosser theorem: β-reduction is confluent' },
 
             // Level 1
-            { id: 'toReflTransGen', name: 'toReflTransGenPar', type: 'lemma', x: -2, y: 3, z: 0 },
-            { id: 'crReflTransGen', name: 'church_rosser_reflTransGen', type: 'theorem', x: 0, y: 3, z: 0 },
-            { id: 'rtgToSteps', name: 'ReflTransGenPar.toSteps', type: 'lemma', x: 2, y: 3, z: 0 },
+            { id: 'toReflTransGen', name: 'Steps.toReflTransGenPar', type: 'lemma', x: -2, y: 3, z: 0,
+              deps: 'Step.toPar', desc: 'Convert Steps to ReflTransGen of Par' },
+            { id: 'crReflTransGen', name: 'church_rosser_reflTransGen', type: 'theorem', x: 0, y: 3, z: 0,
+              deps: 'Par.diamond', desc: 'Church-Rosser for ReflTransGen Par' },
+            { id: 'rtgToSteps', name: 'ReflTransGenPar.toSteps', type: 'lemma', x: 2, y: 3, z: 0,
+              deps: 'Par.toSteps', desc: 'Convert ReflTransGen Par back to Steps' },
 
             // Level 2
-            { id: 'diamond', name: 'Par.diamond', type: 'theorem', x: 0, y: 2, z: 0 },
-            { id: 'parToSteps', name: 'Par.toSteps', type: 'lemma', x: 2, y: 2, z: 1 },
-            { id: 'stepToPar', name: 'Step.toPar', type: 'lemma', x: -2, y: 2, z: 1 },
+            { id: 'diamond', name: 'Par.diamond', type: 'theorem', x: 0, y: 2, z: 0,
+              deps: 'develop_cofinal, develop', desc: 'Parallel reduction has the diamond property' },
+            { id: 'parToSteps', name: 'Par.toSteps', type: 'lemma', x: 2, y: 2, z: 1,
+              deps: '(structural)', desc: 'Convert Par to sequence of Steps' },
+            { id: 'stepToPar', name: 'Step.toPar', type: 'lemma', x: -2, y: 2, z: 1,
+              deps: '(structural)', desc: 'Single Step implies Par' },
 
             // Level 3
-            { id: 'developCofinal', name: 'develop_cofinal', type: 'theorem', x: 0, y: 1, z: 0 },
-            { id: 'develop', name: 'develop', type: 'def', x: 2, y: 1, z: 0 },
+            { id: 'developCofinal', name: 'Par.develop_cofinal', type: 'theorem', x: 0, y: 1, z: 0,
+              deps: 'Par.substTop, Par.develops, develop', desc: 'Complete development is cofinal for Par' },
+            { id: 'develop', name: 'develop', type: 'def', x: 2, y: 1, z: 0,
+              deps: 'substTop', desc: 'Complete development function (contracts all redexes)' },
 
             // Level 4
-            { id: 'substTop', name: 'Par.substTop', type: 'theorem', x: -1, y: 0, z: 0 },
-            { id: 'develops', name: 'Par.develops', type: 'theorem', x: 1, y: 0, z: 0 },
+            { id: 'substTop', name: 'Par.substTop', type: 'theorem', x: -1, y: 0, z: 0,
+              deps: 'Par.subst, Par.shift', desc: 'Par is preserved under top-level substitution' },
+            { id: 'develops', name: 'Par.develops', type: 'theorem', x: 1, y: 0, z: 0,
+              deps: 'Par.refl, develop', desc: 'Every term Par-reduces to its development' },
 
             // Level 5
-            { id: 'parSubst', name: 'Par.subst', type: 'theorem', x: -2, y: -1, z: 0 },
-            { id: 'parShift', name: 'Par.shift', type: 'theorem', x: 0, y: -1, z: 0 },
-            { id: 'parRefl', name: 'Par.refl', type: 'theorem', x: 2, y: -1, z: 0 },
+            { id: 'parSubst', name: 'Par.subst', type: 'theorem', x: -2, y: -1, z: 0,
+              deps: 'Par.shift, ShiftSubst lemmas', desc: 'Par is preserved under substitution' },
+            { id: 'parShift', name: 'Par.shift', type: 'theorem', x: 0, y: -1, z: 0,
+              deps: 'Par.refl', desc: 'Par is preserved under shifting' },
+            { id: 'parRefl', name: 'Par.refl', type: 'theorem', x: 2, y: -1, z: 0,
+              deps: '(base case)', desc: 'Par is reflexive' },
 
             // ShiftSubst level
-            { id: 'shiftSubst', name: 'ShiftSubst lemmas', type: 'def', x: -2, y: -2, z: 1 },
+            { id: 'shiftSubst', name: 'ShiftSubst lemmas', type: 'def', x: -2, y: -2, z: 1,
+              deps: '(44KB of lemmas)', desc: 'shift_shifted, subst_subst, shift_subst_comm, ...' },
 
             // Beta module
-            { id: 'stepEdges', name: 'stepEdgesList', type: 'def', x: 3, y: 0, z: 2 },
+            { id: 'stepEdges', name: 'stepEdgesList', type: 'def', x: 3, y: 0, z: 2,
+              deps: 'rootStep?, Step', desc: 'Enumerate all possible β-reduction steps' },
 
             // Bridge
-            { id: 'bridge', name: 'ofComb_simulates', type: 'theorem', x: 0, y: 5, z: 1 },
+            { id: 'bridge', name: 'ofComb_simulates_step_joinable', type: 'theorem', x: 0, y: 5, z: 1,
+              deps: 'Steps.churchRosser', desc: 'SK combinator steps simulate as joinable λ-reductions' },
         ];
 
         const edges = [
@@ -336,6 +394,9 @@
 
         // Create nodes
         const nodeObjects = {};
+        const nodeMeshes = []; // Array for raycasting
+        const meshToNode = new Map(); // Map mesh to node data
+
         nodes.forEach(node => {
             const geometry = new THREE.SphereGeometry(0.25, 32, 32);
             const material = new THREE.MeshBasicMaterial({
@@ -347,6 +408,8 @@
             sphere.position.set(node.x, node.y, node.z);
             scene.add(sphere);
             nodeObjects[node.id] = sphere;
+            nodeMeshes.push(sphere);
+            meshToNode.set(sphere, node);
 
             // Glow
             const glowGeometry = new THREE.SphereGeometry(0.35, 32, 32);
@@ -358,6 +421,12 @@
             const glow = new THREE.Mesh(glowGeometry, glowMaterial);
             sphere.add(glow);
         });
+
+        // Raycaster for hover detection
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const tooltip = document.getElementById('tooltip');
+        let hoveredNode = null;
 
         // Create edges
         edges.forEach(([from, to]) => {
@@ -404,10 +473,45 @@
                 camera.lookAt(0, 1, 0);
             }
             previousMousePosition = { x: e.clientX, y: e.clientY };
+
+            // Raycasting for hover tooltip
+            const rect = container.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodeMeshes);
+
+            if (intersects.length > 0) {
+                const mesh = intersects[0].object;
+                const node = meshToNode.get(mesh);
+                if (node && node !== hoveredNode) {
+                    hoveredNode = node;
+                    // Update tooltip content
+                    tooltip.querySelector('.tooltip-name').textContent = node.name;
+                    const typeEl = tooltip.querySelector('.tooltip-type');
+                    typeEl.textContent = node.type;
+                    typeEl.className = 'tooltip-type ' + node.type;
+                    tooltip.querySelector('.tooltip-deps').innerHTML =
+                        '<strong>Dependencies:</strong> ' + (node.deps || 'none') +
+                        (node.desc ? '<br><br><em>' + node.desc + '</em>' : '');
+                }
+                // Position tooltip near cursor
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+            } else {
+                tooltip.style.display = 'none';
+                hoveredNode = null;
+            }
         });
 
         container.addEventListener('mouseup', () => isDragging = false);
-        container.addEventListener('mouseleave', () => isDragging = false);
+        container.addEventListener('mouseleave', () => {
+            isDragging = false;
+            tooltip.style.display = 'none';
+            hoveredNode = null;
+        });
 
         container.addEventListener('wheel', (e) => {
             const factor = e.deltaY > 0 ? 1.1 : 0.9;

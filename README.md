@@ -41,6 +41,34 @@ HeytingLean/LoF/Combinators/Lambda/
 └── Ruliology.lean    # Multiway exploration utilities
 ```
 
+## Visualizations
+
+<table>
+<tr>
+<td align="center">
+<a href="visualizations/church_rosser_diamond.svg">
+<img src="visualizations/church_rosser_diamond.svg" width="280" alt="Church-Rosser Diamond"/>
+</a>
+<br/><b>Church-Rosser Confluence</b>
+</td>
+<td align="center">
+<a href="visualizations/multiway_confluence.svg">
+<img src="visualizations/multiway_confluence.svg" width="280" alt="Multiway Confluence"/>
+</a>
+<br/><b>Multiway β-Reduction</b>
+</td>
+</tr>
+</table>
+
+**[Interactive 3D Multiway Graph](visualizations/ruliad_lambda_3d.html)** — Open in browser for full Ruliad exploration
+
+*Neon purple Ruliad palette: `#9D4EDD` `#7B2CBF` `#E0AAFF` `#10002B`*
+
+## Documentation
+
+- **[Claims & Proofs](docs/CLAIMS_AND_PROOFS.md)** — Mapping Wolfram's claims to Lean theorems
+- **[Notebook-Style Narrative](docs/NOTEBOOK_STYLE_README.md)** — Computational essay format
+
 ## Verification
 
 ```bash

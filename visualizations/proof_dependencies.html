@@ -60,14 +60,46 @@
         }
         .theorem-list { padding: 10px; }
         .theorem {
-            padding: 8px 12px;
             margin: 5px 0;
             background: rgba(157, 78, 221, 0.1);
             border-left: 3px solid #9D4EDD;
             border-radius: 0 4px 4px 0;
             font-size: 12px;
+            overflow: hidden;
         }
-        .theorem:hover { background: rgba(157, 78, 221, 0.3); }
+        .theorem-header {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .theorem-header:hover { background: rgba(157, 78, 221, 0.3); }
+        .theorem-toggle {
+            color: #7B2CBF;
+            font-size: 10px;
+            transition: transform 0.2s;
+            margin-right: 4px;
+        }
+        .theorem.expanded .theorem-toggle { transform: rotate(90deg); }
+        .theorem-code {
+            display: none;
+            background: #0d001a;
+            border-top: 1px solid #3c096c;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre;
+            color: #E0AAFF;
+        }
+        .theorem.expanded .theorem-code { display: block; }
+        .theorem-code .keyword { color: #FF6B6B; }
+        .theorem-code .type { color: #4ECDC4; }
+        .theorem-code .comment { color: #7B2CBF; font-style: italic; }
+        .theorem-code .string { color: #C77DFF; }
         .theorem-name { color: #E0AAFF; font-weight: bold; }
         .theorem-deps { color: #7B2CBF; font-size: 11px; margin-top: 4px; }
         .theorem-type {
@@ -149,55 +181,131 @@
             <div class="module-section">
                 <div class="module-header">Confluence.lean — Church-Rosser</div>
                 <div class="theorem-list">
-                    <div class="theorem">
-                        <span class="theorem-name">Steps.churchRosser</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Steps.toReflTransGenPar, church_rosser_reflTransGen, ReflTransGenPar.toSteps</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Steps.churchRosser</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← toReflTransGenPar, church_rosser_reflTransGen, toSteps</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- The Church-Rosser theorem: β-reduction is confluent</span>
+<span class="keyword">theorem</span> Steps.churchRosser {t u v : <span class="type">Term</span>}
+    (htu : <span class="type">Steps</span> t u) (htv : <span class="type">Steps</span> t v) :
+    ∃ w : <span class="type">Term</span>, <span class="type">Steps</span> u w ∧ <span class="type">Steps</span> v w := <span class="keyword">by</span>
+  <span class="keyword">have</span> htu' := htu.toReflTransGenPar
+  <span class="keyword">have</span> htv' := htv.toReflTransGenPar
+  <span class="keyword">obtain</span> ⟨w, huw, hvw⟩ := church_rosser_reflTransGen htu' htv'
+  exact ⟨w, huw.toSteps, hvw.toSteps⟩</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">church_rosser_reflTransGen</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.diamond</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">church_rosser_reflTransGen</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Par.diamond</div>
+                        </div>
+                        <div class="theorem-code"><span class="keyword">theorem</span> church_rosser_reflTransGen {t u v : <span class="type">Term</span>}
+    (htu : <span class="type">Relation.ReflTransGen</span> <span class="type">Par</span> t u)
+    (htv : <span class="type">Relation.ReflTransGen</span> <span class="type">Par</span> t v) :
+    ∃ w, <span class="type">Relation.ReflTransGen</span> <span class="type">Par</span> u w ∧
+         <span class="type">Relation.ReflTransGen</span> <span class="type">Par</span> v w :=
+  <span class="type">Relation.church_rosser</span> (<span class="keyword">fun</span> _ _ _ => Par.diamond) htu htv</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.diamond</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.develop_cofinal, develop</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Par.diamond</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← develop_cofinal, develop</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- The diamond property for parallel reduction</span>
+<span class="keyword">theorem</span> Par.diamond {t u v : <span class="type">Term</span>}
+    (htu : <span class="type">Par</span> t u) (htv : <span class="type">Par</span> t v) :
+    ∃ w : <span class="type">Term</span>, <span class="type">Par</span> u w ∧ <span class="type">Par</span> v w := <span class="keyword">by</span>
+  exact ⟨develop t, develop_cofinal htu, develop_cofinal htv⟩</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.develop_cofinal</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.substTop, Par.develops, develop</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Par.develop_cofinal</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Par.substTop, Par.develops, develop</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Complete development is cofinal: t →∥ u implies u →∥ develop t</span>
+<span class="keyword">theorem</span> Par.develop_cofinal : ∀ {t u : <span class="type">Term</span>},
+    <span class="type">Par</span> t u → <span class="type">Par</span> u (develop t) := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t u h
+  <span class="keyword">induction</span> h <span class="keyword">with</span>
+  | var => exact Par.refl _
+  | lam _ ih => exact Par.lam ih
+  | app _ _ ihf iha => <span class="comment">-- case analysis on head</span>
+      <span class="keyword">cases</span> hf : t.1 <span class="keyword">with</span>
+      | lam body => exact Par.substTop iha ihf
+      | _ => exact Par.app ihf iha
+  | beta _ _ ihArg ihBody =>
+      exact Par.substTop ihArg ihBody</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.substTop</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.subst, Par.shift</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Par.substTop</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Par.subst, Par.shift</div>
+                        </div>
+                        <div class="theorem-code"><span class="keyword">theorem</span> Par.substTop {arg arg' body body' : <span class="type">Term</span>}
+    (hArg : <span class="type">Par</span> arg arg') (hBody : <span class="type">Par</span> body body') :
+    <span class="type">Par</span> (substTop arg body) (substTop arg' body') := <span class="keyword">by</span>
+  <span class="keyword">unfold</span> substTop
+  <span class="keyword">apply</span> Par.shiftDown_conservation
+  · exact Shifted.subst_top_shifted
+  · exact Par.subst hBody (Par.shift hArg)</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.develops</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.refl, develop</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Par.develops</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Par.refl, develop</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Every term parallel-reduces to its complete development</span>
+<span class="keyword">theorem</span> Par.develops : ∀ t : <span class="type">Term</span>, <span class="type">Par</span> t (develop t) := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t
+  <span class="keyword">induction</span> t <span class="keyword">with</span>
+  | var n => exact Par.refl _
+  | lam body ih => exact Par.lam ih
+  | app f a ihf iha =>
+      <span class="keyword">cases</span> hf : f <span class="keyword">with</span>
+      | lam body => exact Par.beta ihf iha
+      | _ => exact Par.app ihf iha</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">develop</span>
-                        <span class="theorem-type type-def">def</span>
-                        <div class="theorem-deps">← substTop (from ShiftSubst)</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">develop</span>
+                            <span class="theorem-type type-def">def</span>
+                            <div class="theorem-deps">← substTop (from ShiftSubst)</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Complete development: contract ALL redexes simultaneously</span>
+<span class="keyword">def</span> develop : <span class="type">Term</span> → <span class="type">Term</span>
+  | .var n => .var n
+  | .lam body => .lam (develop body)
+  | .app (.lam body) arg =>
+      substTop (develop arg) (develop body)
+  | .app f arg => .app (develop f) (develop arg)</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.subst</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.shift, ShiftSubst lemmas</div>
-                    </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.shift</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Par.refl</div>
-                    </div>
-                    <div class="theorem">
-                        <span class="theorem-name">Par.refl</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← (base case)</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Par.refl</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← (base case)</div>
+                        </div>
+                        <div class="theorem-code"><span class="keyword">theorem</span> Par.refl : ∀ t : <span class="type">Term</span>, <span class="type">Par</span> t t := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t
+  <span class="keyword">induction</span> t <span class="keyword">with</span>
+  | var n => exact Par.var n
+  | lam body ih => exact Par.lam ih
+  | app f a ihf iha => exact Par.app ihf iha</div>
                     </div>
                 </div>
             </div>
@@ -205,25 +313,59 @@
             <div class="module-section">
                 <div class="module-header">ShiftSubst.lean — Substitution Calculus</div>
                 <div class="theorem-list">
-                    <div class="theorem">
-                        <span class="theorem-name">shift_shifted</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← (structural induction)</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">shift_shifted</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← (structural induction)</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Shifting preserves the Shifted predicate</span>
+<span class="keyword">theorem</span> shift_shifted (d c : <span class="type">Nat</span>) :
+    ∀ t : <span class="type">Term</span>, <span class="type">Shifted</span> d c (<span class="type">Term</span>.shift t c d) := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t
+  <span class="keyword">induction</span> t <span class="keyword">generalizing</span> c <span class="keyword">with</span>
+  | var n =>
+      <span class="keyword">simp</span> [Term.shift]
+      <span class="keyword">split</span> <;> <span class="keyword">constructor</span> <;> omega
+  | app f a ihf iha => exact Shifted.app (ihf c) (iha c)
+  | lam body ih => exact Shifted.lam (ih (c + 1))</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">shiftDown_shift_id</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← shift_shifted</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">shiftDown_shift_id</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← shift_shifted</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- shiftDown cancels shift when applied to shifted terms</span>
+<span class="keyword">theorem</span> shiftDown_shift_id :
+    ∀ (t : <span class="type">Term</span>) (d c : <span class="type">Nat</span>),
+    shiftDown (shift t c d) c d = t := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t d c
+  <span class="keyword">induction</span> t <span class="keyword">generalizing</span> c <span class="keyword">with</span>
+  | var n => <span class="keyword">simp</span> [shift, shiftDown]; <span class="keyword">split</span> <;> omega
+  | app f a ihf iha => <span class="keyword">simp</span> [shift, shiftDown, ihf, iha]
+  | lam body ih => <span class="keyword">simp</span> [shift, shiftDown, ih]</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">shift_shift_swap</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← (structural induction)</div>
-                    </div>
-                    <div class="theorem">
-                        <span class="theorem-name">subst_shifted</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← shift_shifted</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">subst_shifted</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← shift_shifted</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Substitution preserves shifted property</span>
+<span class="keyword">theorem</span> subst_shifted (arg : <span class="type">Term</span>) :
+    ∀ (t : <span class="type">Term</span>) (n d c : <span class="type">Nat</span>),
+    <span class="type">Shifted</span> d c t →
+    <span class="type">Shifted</span> d c (subst t n arg) := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t n d c ht
+  <span class="keyword">induction</span> ht <span class="keyword">generalizing</span> n <span class="keyword">with</span>
+  | var_lt h => <span class="keyword">simp</span> [subst]; <span class="keyword">split</span> <;> <span class="keyword">constructor</span> <;> omega
+  | var_ge h => <span class="comment">-- similar</span>
+  | app _ _ ihf iha => exact Shifted.app (ihf n) (iha n)
+  | lam _ ih => exact Shifted.lam (ih (n + 1))</div>
                     </div>
                 </div>
             </div>
@@ -231,20 +373,71 @@
             <div class="module-section">
                 <div class="module-header">Beta.lean — Reduction & Multiway</div>
                 <div class="theorem-list">
-                    <div class="theorem">
-                        <span class="theorem-name">stepEdgesList</span>
-                        <span class="theorem-type type-def">def</span>
-                        <div class="theorem-deps">← rootStep?, Step</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">Step</span>
+                            <span class="theorem-type type-def">inductive</span>
+                            <div class="theorem-deps">← substTop</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Single-step β-reduction relation</span>
+<span class="keyword">inductive</span> <span class="type">Step</span> : <span class="type">Term</span> → <span class="type">Term</span> → <span class="type">Prop</span> <span class="keyword">where</span>
+  | head : <span class="type">Step</span> (.app (.lam body) arg) (substTop arg body)
+  | appL : <span class="type">Step</span> f f' → <span class="type">Step</span> (.app f a) (.app f' a)
+  | appR : <span class="type">Step</span> a a' → <span class="type">Step</span> (.app f a) (.app f a')
+  | lam  : <span class="type">Step</span> t t' → <span class="type">Step</span> (.lam t) (.lam t')</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">stepEdgesList_sound</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← rootStep?_sound, Step</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">stepEdgesList</span>
+                            <span class="theorem-type type-def">def</span>
+                            <div class="theorem-deps">← rootStep?, liftLeft, liftRight</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Enumerate ALL possible β-reduction steps (multiway)</span>
+<span class="keyword">def</span> stepEdgesList : <span class="type">Term</span> → <span class="type">List</span> (<span class="type">EventData</span> × <span class="type">Term</span>)
+  | .var _ => []
+  | .lam body =>
+      (stepEdgesList body).map liftBody
+  | .app f a =>
+      rootEdgesList (.app f a) ++
+      (stepEdgesList f).map (liftLeft a) ++
+      (stepEdgesList a).map (liftRight f)</div>
                     </div>
-                    <div class="theorem">
-                        <span class="theorem-name">stepEdgesList_complete</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Step cases</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">stepEdgesList_sound</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← rootStep?_sound, Step</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Every edge in stepEdgesList is a valid Step</span>
+<span class="keyword">theorem</span> stepEdgesList_sound :
+    ∀ {t : <span class="type">Term</span>} {ed : <span class="type">EventData</span>} {u : <span class="type">Term</span>},
+    (ed, u) ∈ stepEdgesList t → <span class="type">Step</span> t u := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t ed u h
+  <span class="keyword">induction</span> t <span class="keyword">with</span>
+  | var => <span class="keyword">simp</span> [stepEdgesList] <span class="keyword">at</span> h
+  | lam body ih => <span class="comment">-- use ih with liftBody</span>
+  | app f a ihf iha => <span class="comment">-- case split on membership</span></div>
+                    </div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">stepEdgesList_complete</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Step cases</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Every Step is represented in stepEdgesList</span>
+<span class="keyword">theorem</span> stepEdgesList_complete :
+    ∀ {t u : <span class="type">Term</span>}, <span class="type">Step</span> t u →
+    ∃ ed, (ed, u) ∈ stepEdgesList t := <span class="keyword">by</span>
+  <span class="keyword">intro</span> t u h
+  <span class="keyword">induction</span> h <span class="keyword">with</span>
+  | head => exact ⟨⟨[], .head⟩, <span class="keyword">by</span> <span class="keyword">simp</span> [stepEdgesList, rootEdgesList]⟩
+  | appL _ ih => <span class="keyword">obtain</span> ⟨ed, hed⟩ := ih; <span class="comment">-- lift via liftLeft</span>
+  | appR _ ih => <span class="keyword">obtain</span> ⟨ed, hed⟩ := ih; <span class="comment">-- lift via liftRight</span>
+  | lam _ ih => <span class="keyword">obtain</span> ⟨ed, hed⟩ := ih; <span class="comment">-- lift via liftBody</span></div>
                     </div>
                 </div>
             </div>
@@ -252,10 +445,45 @@
             <div class="module-section">
                 <div class="module-header">SKYBridge.lean — λ ↔ SK Bridge</div>
                 <div class="theorem-list">
-                    <div class="theorem">
-                        <span class="theorem-name">ofComb_simulates_step_joinable</span>
-                        <span class="theorem-type type-theorem">theorem</span>
-                        <div class="theorem-deps">← Steps.churchRosser, KEnc/SEnc β-reduction lemmas</div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">KEnc / SEnc</span>
+                            <span class="theorem-type type-def">def</span>
+                            <div class="theorem-deps">← Term constructors</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- Standard λ-encodings of K and S combinators</span>
+<span class="keyword">def</span> KEnc : <span class="type">Term</span> := .lam (.lam (.var 1))
+<span class="comment">-- K = λx.λy.x</span>
+
+<span class="keyword">def</span> SEnc : <span class="type">Term</span> := .lam (.lam (.lam
+    (.app (.app (.var 2) (.var 0))
+          (.app (.var 1) (.var 0)))))
+<span class="comment">-- S = λx.λy.λz.((x z)(y z))</span>
+
+<span class="keyword">def</span> YEnc : <span class="type">Term</span> :=
+  .lam (.app (.lam (.app (.var 1) (.app (.var 0) (.var 0))))
+             (.lam (.app (.var 1) (.app (.var 0) (.var 0)))))
+<span class="comment">-- Y = λf.(λx.f(x x))(λx.f(x x))</span></div>
+                    </div>
+                    <div class="theorem" onclick="this.classList.toggle('expanded')">
+                        <div class="theorem-header">
+                            <span class="theorem-toggle">▶</span>
+                            <span class="theorem-name">ofComb_simulates_step_joinable</span>
+                            <span class="theorem-type type-theorem">theorem</span>
+                            <div class="theorem-deps">← Steps.churchRosser, K/S β-lemmas</div>
+                        </div>
+                        <div class="theorem-code"><span class="comment">-- SK combinator steps are simulated by joinable λ β-reductions</span>
+<span class="keyword">theorem</span> Bridge.ofComb_simulates_step_joinable
+    (c c' : <span class="type">Comb</span>) (h : <span class="type">Comb.Step</span> c c') :
+    StepsLemmas.Joinable (ofComb c) (ofComb c') := <span class="keyword">by</span>
+  <span class="keyword">induction</span> h <span class="keyword">with</span>
+  | K => <span class="comment">-- K x y →_SK x simulated by β-steps</span>
+      exact ⟨_, KEnc_beta_steps, Steps.refl _⟩
+  | S => <span class="comment">-- S x y z →_SK (x z)(y z) simulated</span>
+      exact ⟨_, SEnc_beta_steps, Steps.refl _⟩
+  | appL _ ih => exact Joinable.app_left ih
+  | appR _ ih => exact Joinable.app_right ih</div>
                     </div>
                 </div>
             </div>

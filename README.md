@@ -1,8 +1,38 @@
+<img src="assets/Apoth3osis.webp" alt="Apoth3osis Logo" width="140"/>
+
+<sub><strong>Our tech stack is ontological:</strong><br>
+<strong>Hardware — Physics</strong><br>
+<strong>Software — Mathematics</strong><br><br>
+<strong>Our engineering workflow is simple:</strong> discover, build, grow, learn & teach</sub>
+
+---
+
+<sub>
+<strong>Notice of Proprietary Information</strong><br>
+This document outlines foundational concepts and methodologies developed during internal research and development at Apoth3osis. To protect our intellectual property and adhere to client confidentiality agreements, the code, architectural details, and performance metrics presented herein may be simplified, redacted, or presented for illustrative purposes only. This paper is intended to share our conceptual approach and does not represent the full complexity, scope, or performance of our production-level systems. The complete implementation and its derivatives remain proprietary.
+</sub>
+
+---
+
 # Ruliad Lambda
 
 **Machine-verified proofs for the foundations of λ-calculus ruliology.**
 
 This repository contains Lean 4 formalizations supporting concepts from Stephen Wolfram's ["The Ruliology of Lambdas"](https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/) (2025).
+
+
+## Credo
+
+> *"The genome doesn't specify the organism; it offers a set of pointers to regions in the space of all possible forms, relying on the laws of physics and computation to do the heavy lifting."*
+> — **Michael Levin**
+
+Our company operates as a lens for cognitive pointers: identifying established theoretical work and translating it into computationally parsable structures. By turning ideas into formal axioms, and axioms into verifiable code, we create the "Lego blocks" required to build complex systems with confidence.
+
+### Acknowledgment
+
+We humbly thank the collective intelligence of humanity for providing the technology and culture we cherish. We do our best to properly reference the authors of the works utilized herein, though we may occasionally fall short. Our formalization acts as a reciprocal validation—confirming the structural integrity of their original insights while securing the foundation upon which we build. In truth, all creative work is derivative; we stand on the shoulders of those who came before, and our contributions are simply the next link in an unbroken chain of human ingenuity.
+
+---
 
 ## Key Results
 

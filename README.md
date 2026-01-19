@@ -134,4 +134,5 @@ https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/
 
 ## License
 
-MIT License - see [LICENSE](LICENSE)
+This project is provided under the Apoth3osis License Stack v1.
+See `LICENSE.md` and the files under `licenses/`.
